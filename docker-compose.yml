@@ -1,0 +1,58 @@
+# See https://docs.flagsmith.com/deployment/docker for more information on running Flagsmith in Docker
+# This Docker Compose file will run the entire Flagsmith Platform
+
+volumes:
+  flagsmith_pgdata:
+    name: flagsmith_pgdata_volume
+
+services:
+  postgres:
+    container_name: flagsmith_postgres
+    image: postgres:15.5-alpine
+    env_file:
+      - .env
+    volumes:
+      - flagsmith_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -d flagsmith -U postgres' ]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+      start_period: 20s
+
+  flagsmith:
+    container_name: flagsmith
+    image: docker.flagsmith.com/flagsmith/flagsmith:latest
+    command:
+      - serve
+    env_file:
+      - .env
+    depends_on:
+      migrate-db:
+        condition: service_completed_successfully
+
+  migrate-db:
+    container_name: migrate-db
+    image: docker.flagsmith.com/flagsmith/flagsmith:latest
+    command:
+      - migrate
+    healthcheck:
+      disable: true
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # The flagsmith_processor service is only needed if TASK_RUN_METHOD set to TASK_PROCESSOR
+  # in the application environment
+  flagsmith-task-processor:
+    container_name: flagsmith-task-processor
+    image: docker.flagsmith.com/flagsmith/flagsmith:latest
+    command:
+      - run-task-processor
+    env_file:
+      - .env
+    depends_on:
+      migrate-db:
+        condition: service_completed_successfully
