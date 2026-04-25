@@ -19,10 +19,11 @@ Bienvenido a la implementación autogestionada de **Flagsmith**. Esta configurac
 ## 📦 Instalación y Despliegue
 
 1. **Configurar el entorno:**
-   Asegúrate de tener un archivo `.env` en la raíz con las variables necesarias (ver sección de [Configuración](#-configuración)).
+   Asegúrate de tener un archivo `.env` en el directorio `docker-compose` con las variables necesarias (ver sección de [Configuración](#-configuración)).
 
 2. **Levantar los servicios:**
    ```bash
+   cd docker-compose
    docker-compose up -d
    ```
 
@@ -34,6 +35,7 @@ Bienvenido a la implementación autogestionada de **Flagsmith**. Esta configurac
 Para poder acceder al panel de administración por primera vez, necesitas crear una cuenta de superusuario:
 
 ```bash
+cd docker-compose
 docker-compose run --rm flagsmith createsuperuser
 ```
 *Sigue las instrucciones en la terminal para configurar tu email y contraseña.*
@@ -49,7 +51,7 @@ Una vez que hayas creado tu superusuario, sigue estos pasos para empezar a usar 
 
 ## ⚙️ Configuración (.env)
 
-Para que el proyecto funcione correctamente, crea un archivo `.env` en la raíz con el siguiente contenido base:
+Para que el proyecto funcione correctamente, asegúrate de tener un archivo `.env` en el directorio `docker-compose` con el siguiente contenido base:
 
 ```bash
 # All environments variables are available here:
